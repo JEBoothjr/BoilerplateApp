@@ -1,0 +1,7 @@
+{
+    "db": {
+        "mongodb": {
+            "uri": "MONGO_URL"
+        }
+    }
+}

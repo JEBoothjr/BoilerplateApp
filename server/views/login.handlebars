@@ -1,0 +1,36 @@
+<h1>{{> page/title}}</h1>
+
+{{#section 'css'}}
+ <link href="css/login.css" media="all" rel="stylesheet" type="text/css" />
+{{/section}}
+
+    <p>
+    User:
+    {{#if user}}
+        <%= user %> (<a href='/logout'>logout</a>)
+    {{else}}
+        Not logged in
+    {{/if}}
+    </p>
+    <p>
+    <form action="/api/login" method="POST">
+      Email:
+      <br><input name="user" type="text">
+      <br><input type="submit" value="Login / Register">
+    </form>
+    </p>
+    <ul>
+      <li>
+        <a href='/'>Back to homepage</a>
+      </li>
+      <li>
+        <a href='/restricted'>Restricted page</a>
+      </li>
+</ul>
+
+{{#section 'js'}}
+<script src="js/login.js"></script>
+{{/section}}
+
+
+{{> page/nav}}
