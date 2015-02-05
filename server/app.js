@@ -11,13 +11,9 @@ var config = require('config'),
     bodyParser = require('body-parser'),
     domain = require('domain'),
     topDomain = domain.create(),
-    Cassandra = require('cassandra-driver'),
     errorMiddleware = require('./middleware/HttpError').httpError,
-    tokenMiddleware = require('./middleware/Token').token,
-    masterItemsRouter = require('./routers/master_items_Router').router,
-    logger = require('./lib/Logger'),
-    BaseModel = require('./models/BaseModel'),
-    cassandraClient;
+    siteRouter = require('./routers/siteRouter').router,
+    logger = require('./lib/Logger');
 
 /* istanbul ignore next */
 if (!logger.configured) {
@@ -59,51 +55,11 @@ var initRoutingAndMiddleware = function(callback) {
     }));
     app.use(cookieParser());
 
-    app.use(passwordless.sessionSupport());
-    app.use(passwordless.acceptToken({
-        successRedirect: '/'
-    }));
-
-    app.use(tokenMiddleware); //Must be first for token middleware to be handled first
-    app.use(masterItemsRouter);
+    app.use(siteRouter);
 
     app.use(errorMiddleware); //Must be last
 
     callback(null, true);
-};
-
-var startCassandra = function(callback) {
-    var dbConfig = config.util.cloneDeep(config.db.cassandra);
-
-    logger.info("Starting Cassandra Client");
-
-    //config module v1.0.0 no longer supports mutable config values, so we need to clone it and set it.
-    dbConfig.username = process.env.CASS_USER || dbConfig.username;
-    dbConfig.password = process.env.CASS_PASS || dbConfig.password;
-
-    cassandraClient = new Cassandra.Client(dbConfig);
-    cassandraClient.connect(function(err) {
-        /* istanbul ignore if */
-        if (err) {
-            logger.error("Database Error :\r\n" + JSON.stringify(err, null, 2));
-            return callback(new Error("The database failed to connect!"), false);
-        }
-
-        cassandraClient.on('log', function(level, className, message, furtherInfo) {
-            logger.info('log event: %s \n %s \n %s', level, message, furtherInfo);
-        });
-
-        callback(false, true);
-    });
-};
-
-var setupModels = function(callback) {
-    logger.info("Initializing Models");
-
-    BaseModel.prototype.client = cassandraClient;
-    BaseModel.prototype.driver = Cassandra;
-
-    callback(false, true);
 };
 
 var startServer = function(callback) {
@@ -128,12 +84,6 @@ topDomain.run(function() {
             },
             function(callback) {
                 initRoutingAndMiddleware(callback);
-            },
-            function(callback) {
-                startCassandra(callback);
-            },
-            function(callback) {
-                setupModels(callback);
             },
             function(callback) {
                 startServer(callback);
