@@ -4,7 +4,7 @@
     "private": true,
     "dependencies": {
         "bootstrap": "3.3.2",
-        "backbone.marionette": "~2.3.1",
+        "react": "~0.12.2",
         "jquery": "~1.10.2",
         "lodash": "~3.0.1",
         "backbone": "~1.1.2"
@@ -22,8 +22,8 @@
         "backbone": {
             "js": "backbone.js"
         },
-        "backbone.marionette": {
-            "js": "lib/backbone.marionette.js"
+        "react": {
+            "js": "react.js"
         },
         "jasmine": {}
     }

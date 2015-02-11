@@ -1,4 +1,5 @@
-@import url("login.css");
-body {
-    background-color: #FFFF00;
+p {
+    color:#FF0000;
+    border:1px solid #FF0000;
 }
+

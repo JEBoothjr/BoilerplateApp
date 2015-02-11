@@ -77,21 +77,17 @@ gulp.task('build:package', function(callback) {
 
     var bundles = [{
         js: {
-            name: 'login.js',
-            files: ['./client/js/login.js']
+            name: 'setup.js',
+            files: ['./client/js/setup.js']
         },
         css: {
-            name: 'login.css',
-            files: ['./client/css/login.css']
+            name: 'setup.css',
+            files: ['./client/css/setup.css']
         }
     }, {
         js: {
-            name: 'main.js',
-            files: ['./client/js/main.js']
-        },
-        css: {
-            name: 'main.css',
-            files: ['./client/css/main.css']
+            name: 'vendor.js',
+            files: ['./bower_components/jquery/jquery.js', './bower_components/underscore/underscore.js', './bower_components/backbone/backbone.js', './bower_components/react/react.js']
         }
     }];
 
