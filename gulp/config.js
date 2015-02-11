@@ -23,7 +23,6 @@ module.exports = {
         './client/css/**/*.css'
     ],
     CLIENT_WATCH: [
-        './client/**/*.js',
         './client/**/*.css',
         './client/**/*.html'
     ],

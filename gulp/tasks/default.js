@@ -19,7 +19,7 @@ gulp.task('default', ['docs', 'jshint:server', 'coverage']);
 gulp.task('commit', ['jshint:server']);
 gulp.task('setup', ['githhooks:update']);
 
-gulp.task('develop', function() {
+gulp.task('develop', ['build'], function() {
     conf.isWatching = true;
 
     gulp.watch(conf.CLIENT_WATCH, ['build']);

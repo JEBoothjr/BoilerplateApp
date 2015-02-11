@@ -8,6 +8,7 @@ var gulp = require('gulp'),
     uglify = require('gulp-uglify'),
     minifyCSS = require('gulp-minify-css'),
     sourcemaps = require('gulp-sourcemaps'),
+    gutil = require('gulp-util'),
     browserify = require('browserify'),
     watchify = require('watchify'),
     conf = require('../config');
@@ -29,13 +30,14 @@ gulp.task('build:clean', function(callback) {
 // };
 
 var _packageJSBundle = function(bundleInfo, callback) {
-    var bundler = browserify({
+    var bundler = watchify(browserify({
             entries: bundleInfo.js.files,
             extensions: ['.js']
-        }),
-        bundle = function() {
+        })),
+        bundle = function(cb) {
             return bundler
                 .bundle()
+                .on('error', gutil.log.bind(gutil, 'Browserify Error'))
                 //.pipe(source(getBundleName() + '.js'))
                 .pipe(source(bundleInfo.js.name))
                 .pipe(buffer())
@@ -46,10 +48,17 @@ var _packageJSBundle = function(bundleInfo, callback) {
                 .pipe(uglify())
                 .pipe(sourcemaps.write('./'))
                 .pipe(gulp.dest('./server/public/js/'))
-                .on('end', callback);
+                .on('end', cb);
         };
 
-    return bundle();
+    bundler.on('update', function(ids) {
+        console.time("REBUILDING: " + ids);
+        bundle(function() {
+            console.timeEnd("REBUILDING: " + ids);
+        });
+    });
+
+    return bundle(callback);
 };
 
 var _packageCSSBundle = function(bundleInfo, callback) {
@@ -64,6 +73,8 @@ var _packageCSSBundle = function(bundleInfo, callback) {
 };
 
 gulp.task('build:package', function(callback) {
+    conf.isWatching = true;
+
     var bundles = [{
         js: {
             name: 'login.js',
