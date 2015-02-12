@@ -1,5 +1,7 @@
 'use strict';
 
+//process.env.BROWSERIFYSHIM_DIAGNOSTICS = 1;
+
 var gulp = require('gulp'),
     async = require('async'),
     del = require('del'),
@@ -87,17 +89,21 @@ gulp.task('build:package', function(callback) {
     }, {
         js: {
             name: 'vendor.js',
-            files: ['./bower_components/jquery/jquery.js', './bower_components/underscore/underscore.js', './bower_components/backbone/backbone.js', './bower_components/react/react.js']
+            files: ['./client/js/vendor.js', './bower_components/jquery/jquery.js', './bower_components/underscore/underscore.js', './node_modules/backbone/backbone.js', './bower_components/react/react.js'],
+            alias: []
         }
     }];
-
     async.eachSeries(bundles, function(bundle, callback) {
         async.series([
             function(callback) {
                 _packageJSBundle(bundle, callback);
             },
             function(callback) {
-                _packageCSSBundle(bundle, callback);
+                if (bundle.css) {
+                    _packageCSSBundle(bundle, callback);
+                } else {
+                    callback();
+                }
             }
         ], function(err) {
             callback(err);
